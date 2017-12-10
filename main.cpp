@@ -456,12 +456,12 @@ public:
 			}
 
 
-};	//class定義の最後に";"
+};
 
 void main()
 {
 	try {
-		KinectApp app;	//KinectAppクラスの変数宣言
+		KinectApp app;
 		app.initialize();
 		app.run();
 	}
