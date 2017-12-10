@@ -1,21 +1,21 @@
-#include <iostream>				//•W€ƒ‰ƒCƒuƒ‰ƒŠ
-#include <sstream>				//”’l‚©‚ç•¶š—ñA•¶š—ñ‚©‚ç”’l‚Ö‚Ì•ÏŠ·
-#include <fstream>				//ƒtƒ@ƒCƒ‹“üo—Í
-#include <vector>				//“®“I”z—ñ
-#include <array>				//ŒÅ’è’·”z—ñ (faceTracking‚Åg—p)
+#include <iostream>			//æ¨™æº–ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
+#include <sstream>			//æ•°å€¤ã‹ã‚‰æ–‡å­—åˆ—ã€æ–‡å­—åˆ—ã‹ã‚‰æ•°å€¤ã¸ã®å¤‰æ›
+#include <fstream>			//ãƒ•ã‚¡ã‚¤ãƒ«å…¥å‡ºåŠ›
+#include <vector>			//å‹•çš„é…åˆ—
+#include <array>			//å›ºå®šé•·é…åˆ— (faceTrackingã§ä½¿ç”¨)
 #include <string>
 
 #include <Windows.h>
-#include <Kinect.h>				//Kinect SDK
+#include <Kinect.h>			//Kinect SDK
 #include <Kinect.Face.h>		//Face Tracking
 
-#include <opencv2\opencv.hpp>	//Open CV
-#include <atlbase.h>			//Kinect SDK ‰ğ•ú (CComPtr‚Ég‚¤)
+#include <opencv2\opencv.hpp>		//Open CV
+#include <atlbase.h>			//Kinect SDK è§£æ”¾ (CComPtrã«ä½¿ã†)
 
-#include "WaveFile.h"			//˜^‰¹—p
+#include "WaveFile.h"			//éŒ²éŸ³ç”¨
 
 
-//ŠÖ”ƒ}ƒNƒ
+//é–¢æ•°ãƒã‚¯ãƒ­
 #define ERROR_CHECK(ret)		\
 	if( (ret) != S_OK ) {		\
 		std::stringstream ss;	\
@@ -53,11 +53,11 @@ class KinectApp
 	std::vector<BYTE> audioBuffer;
 	WaveFile audioFile;
 
-	//TrackingId(Šp“x‚ÆŠp“x‚ÌM—Š«)
+	//TrackingId(è§’åº¦ã¨è§’åº¦ã®ä¿¡é ¼æ€§)
 	float beamAngle;
 	float beamAngleConfidence;
 
-	//ƒr[ƒ€•ûŒü‚ÌTrackingId‚Æ‚»‚ÌƒCƒ“ƒfƒbƒNƒX
+	//ãƒ“ãƒ¼ãƒ æ–¹å‘ã®TrackingIdã¨ãã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	UINT64 audioTrackingId = (UINT64)-1;
 	int audioTrackingIndex = -1;
 
@@ -66,7 +66,7 @@ class KinectApp
 	int width;
 	int height;
 
-	// ƒJƒƒ‰À•WŒn‚ğColorÀ•WŒn‚É•ÏŠ·‚·‚é
+	// ã‚«ãƒ¡ãƒ©åº§æ¨™ç³»ã‚’Coloråº§æ¨™ç³»ã«å¤‰æ›ã™ã‚‹
 	CComPtr<ICoordinateMapper> mapper;
 
 	cv::Scalar colors[6];
@@ -86,7 +86,7 @@ public:
 		ERROR_CHECK(kinect->get_CoordinateMapper(&mapper));
 
 
-		// ƒvƒŒƒCƒ„[‚ÌF‚ğİ’è‚·‚é
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è‰²ã‚’è¨­å®šã™ã‚‹
 		colors[0] = cv::Scalar(255, 0, 0);		//BLUE
 		colors[1] = cv::Scalar(0, 255, 0);		//GREEN
 		colors[2] = cv::Scalar(0, 0, 255);		//RED
@@ -141,11 +141,11 @@ public:
 		ERROR_CHECK(kinect->get_AudioSource(&audioSource));
 		ERROR_CHECK(audioSource->OpenReader(&audioBeamFrameReader));
 
-		// ƒf[ƒ^ƒoƒbƒtƒ@‚ğì¬‚·‚é
+		// ãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã™ã‚‹
 		UINT subFrameLength = 0;
 		ERROR_CHECK(audioSource->get_SubFrameLengthInBytes(&subFrameLength));
 		audioBuffer.resize(subFrameLength);
-		// Waveƒtƒ@ƒCƒ‹‚ğİ’è‚·‚é
+		// Waveãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¨­å®šã™ã‚‹
 		audioFile.Open("KinectAudio.wav");
 	}
 
@@ -154,11 +154,11 @@ public:
 		DWORD features = FaceFrameFeatures::FaceFrameFeatures_BoundingBoxInColorSpace;
 
 		for (int count = 0; count < BODY_COUNT; count++){
-			//FaceFrameSourceæ“¾
+			//FaceFrameSourceå–å¾—
 			CComPtr<IFaceFrameSource> faceFrameSource;
 			ERROR_CHECK(CreateFaceFrameSource(kinect, 0, features, &faceFrameSource));
 
-			//FaceFrameReader‚ğŠJ‚­
+			//FaceFrameReaderã‚’é–‹ã
 			ERROR_CHECK(faceFrameSource->OpenReader(&faceFrameReader[count]));
 		}
 	}
@@ -166,7 +166,7 @@ public:
 
 	void run()
 	{
-		std::cout << "q ‚ğ‰Ÿ‚·‚ÆI—¹‚µ‚Ü‚·" << std::endl;
+		std::cout << "q ã‚’æŠ¼ã™ã¨çµ‚äº†ã—ã¾ã™" << std::endl;
 		while (1)
 		{
 			update();
@@ -198,20 +198,20 @@ public:
 			}
 
 			void updateAudioFrame(){
-				// ƒr[ƒ€ƒtƒŒ[ƒ€ƒŠƒXƒg‚ğæ“¾‚·‚é
+				// ãƒ“ãƒ¼ãƒ ãƒ•ãƒ¬ãƒ¼ãƒ ãƒªã‚¹ãƒˆã‚’å–å¾—ã™ã‚‹
 				CComPtr<IAudioBeamFrameList> audioBeamFrameList;
 				auto ret = audioBeamFrameReader->AcquireLatestBeamFrames(&audioBeamFrameList);
 				if (ret != S_OK)
 				{return;}
 
-				// ƒr[ƒ€ƒtƒŒ[ƒ€‚ğæ“¾‚·‚é
+				// ãƒ“ãƒ¼ãƒ ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—ã™ã‚‹
 				UINT beamCount = 0;
 				ERROR_CHECK(audioBeamFrameList->get_BeamCount(&beamCount));
 				for (int i = 0; i < beamCount; ++i){
 					CComPtr<IAudioBeamFrame> audioBeamFrame;
 					ERROR_CHECK(audioBeamFrameList->OpenAudioBeamFrame(i, &audioBeamFrame));
 
-					// ƒTƒuƒtƒŒ[ƒ€‚ğæ“¾‚·‚é
+					// ã‚µãƒ–ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—ã™ã‚‹
 					UINT subFrameCount = 0;
 					ERROR_CHECK(audioBeamFrame->get_SubFrameCount(&subFrameCount));
 
@@ -219,17 +219,17 @@ public:
 						CComPtr<IAudioBeamSubFrame> audioBeamSubFrame;
 						ERROR_CHECK(audioBeamFrame->GetSubFrame(j, &audioBeamSubFrame));
 
-						//Buffer‚ÉƒRƒs[iRecord)(1116’Ç‰Áj
+						//Bufferã«ã‚³ãƒ”ãƒ¼ï¼ˆRecord)(1116è¿½åŠ ï¼‰
 						audioBeamSubFrame->CopyFrameDataToArray(audioBuffer.size(), &audioBuffer[0]);
-						// ‰¹ºƒf[ƒ^‚ğ‘‚«‚ŞiRecordj(1116’Ç‰Á)
+						// éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€ï¼ˆRecordï¼‰(1116è¿½åŠ )
 						audioFile.Write(&audioBuffer[0], audioBuffer.size());
 
-						//‰¹º•ûŒü‚ğæ“¾
+						//éŸ³å£°æ–¹å‘ã‚’å–å¾—
 						ERROR_CHECK(audioBeamSubFrame->get_BeamAngle(&beamAngle));
-						//Tracking—p(1116’Ç‰Á)
+						//Trackingç”¨(1116è¿½åŠ )
 						ERROR_CHECK(audioBeamSubFrame->get_BeamAngleConfidence(&beamAngleConfidence));
 						
-						//ƒr[ƒ€•ûŒü‚É‚¢‚él‚Ìl”‚ğæ“¾
+						//ãƒ“ãƒ¼ãƒ æ–¹å‘ã«ã„ã‚‹äººã®äººæ•°ã‚’å–å¾—
 						UINT32 count = 0;
 						ERROR_CHECK(audioBeamSubFrame->get_AudioBodyCorrelationCount(&count));
 
@@ -238,7 +238,7 @@ public:
 							return;
 						}
 
-						//ƒr[ƒ€•ûŒü‚Ìl‚ÌTrackingId‚ğæ“¾
+						//ãƒ“ãƒ¼ãƒ æ–¹å‘ã®äººã®TrackingIdã‚’å–å¾—
 						CComPtr <IAudioBodyCorrelation> audioBodyCorrelation;
 						ERROR_CHECK(audioBeamSubFrame->GetAudioBodyCorrelation(0, &audioBodyCorrelation));
 						ERROR_CHECK(audioBodyCorrelation->get_BodyTrackingId(&audioTrackingId));
@@ -247,14 +247,14 @@ public:
 			}
 
 			void updateBodyFrame(){
-				//ƒtƒŒ[ƒ€‚ğæ“¾
+				//ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—
 				CComPtr<IBodyFrame> bodyFrame;
 				HRESULT ret = bodyFrameReader->AcquireLatestFrame(&bodyFrame);
 				if (ret != S_OK){
 					return;
 				}
 
-				//‘O‰ñ‚ÌBody‚ğ‰ğ•ú
+				//å‰å›ã®Bodyã‚’è§£æ”¾
 				for (auto&body : bodies){
 					if (body != nullptr){
 						body->Release();
@@ -270,7 +270,7 @@ public:
 						UINT64 trackingId = 0;
 						bodies[i]->get_TrackingId(&trackingId);
 
-						//faceFrame‚ÉTracking id‚ğ“o˜^
+						//faceFrameã«Tracking idã‚’ç™»éŒ²
 						CComPtr<IFaceFrameSource> faceFrameSource;
 						ERROR_CHECK(faceFrameReader[i]->get_FaceFrameSource(&faceFrameSource));
 						ERROR_CHECK(faceFrameSource->put_TrackingId(trackingId));
@@ -295,39 +295,39 @@ public:
 			void updateFaceFrame()
 			{
 				for (int count = 0; count < BODY_COUNT; count++){
-					// ÅV‚ÌFace Frame‚ğæ“¾
+					// æœ€æ–°ã®Face Frameã‚’å–å¾—
 					CComPtr<IFaceFrame> faceFrame;
 					HRESULT ret = faceFrameReader[count]->AcquireLatestFrame(&faceFrame);
 					if (FAILED(ret)){continue;}
 
-					// Tracking ID‚Ì“o˜^Šm”F
+					// Tracking IDã®ç™»éŒ²ç¢ºèª
 					BOOLEAN tracked;
 					ERROR_CHECK(faceFrame->get_IsTrackingIdValid(&tracked));
 					if (!tracked){
 						continue;
 					}
 
-					// Face Frame Result‚ğæ“¾
+					// Face Frame Resultã‚’å–å¾—
 					CComPtr<IFaceFrameResult> faceResult;
 					ERROR_CHECK(faceFrame->get_FaceFrameResult(&faceResult));
 
-					// Œ‹‰Ê‚ğæ“¾A•`‰æ
+					// çµæœã‚’å–å¾—ã€æç”»
 					RectI box;
 					cv::Scalar facecolor;
 					if (faceResult != nullptr){
-						// Bounding Box‚Ìæ“¾
+						// Bounding Boxã®å–å¾—
 						ERROR_CHECK(faceResult->get_FaceBoundingBoxInColorSpace(&box));
 						width = box.Right - box.Left;
 						height = box.Bottom - box.Top;
 
-						/*audioTrackingId‚Íº‚ªo‚Ä‚¢‚È‚¢‚Æ-1*/
+						/*audioTrackingIdã¯å£°ãŒå‡ºã¦ã„ãªã„ã¨-1*/
 						std::cout << "body  : " << count << "       " << std::ends;
 						std::cout << "audio : " << audioTrackingIndex << std::endl;
 
 						if (count == audioTrackingIndex){
 							facecolor = cv::Scalar(255, 255, 255);
 						}
-						else{	//audioTrackingIndex == -1‚Ì‚Æ‚«”­˜b‚µ‚Ä‚¢‚È‚¢
+						else{	//audioTrackingIndex == -1ã®ã¨ãç™ºè©±ã—ã¦ã„ãªã„
 							facecolor = colors[count];
 						}
 					}
@@ -336,13 +336,13 @@ public:
 			}
 			/*inline void result(const CComPtr<IFaceFrameResult>& faceResult, const int count)
 			{
-				// Bounding Box‚Ìæ“¾
+				// Bounding Boxã®å–å¾—
 				RectI box;
 				ERROR_CHECK(faceResult->get_FaceBoundingBoxInColorSpace(&box));
 				width = box.Right - box.Left;
 				height = box.Bottom - box.Top;
 
-				//audioTrackingId‚Íº‚ªo‚Ä‚¢‚È‚¢‚Æ-1
+				//audioTrackingIdã¯å£°ãŒå‡ºã¦ã„ãªã„ã¨-1
 				std::cout << "body  : " << count << std::ends;
 				std::cout << "audio : " << audioTrackingIndex << std::endl;
 
@@ -364,7 +364,7 @@ public:
 		}
 	
 			void drawMark(){
-			//drawColor‚æ‚èæ
+			//drawColorã‚ˆã‚Šå…ˆ
 				for (int count = 0; count < BODY_COUNT; count++){
 				auto body = bodies[count];
 
@@ -378,7 +378,7 @@ public:
 						continue;
 					}
 
-					// ŠÖß‚ÌˆÊ’u‚ğ•\¦‚·‚é
+					// é–¢ç¯€ã®ä½ç½®ã‚’è¡¨ç¤ºã™ã‚‹
 					Joint joints[JointType::JointType_Count];
 					body->GetJoints(JointType::JointType_Count, joints);
 
@@ -387,9 +387,9 @@ public:
 
 					for (auto joint : joints) {
 						mapper->MapCameraPointToColorSpace(joint.Position, &point);
-						// ˆÊ’u‚ª’ÇÕó‘Ô
+						// ä½ç½®ãŒè¿½è·¡çŠ¶æ…‹
 						if (joint.TrackingState == TrackingState::TrackingState_Tracked){
-							//“ª•”À•W‚ğŒŸo
+							//é ­éƒ¨åº§æ¨™ã‚’æ¤œå‡º
 							if (joint.JointType == JointType::JointType_Head) {
 								if (count == audioTrackingIndex){
 									balloon = "Speaking";
@@ -413,10 +413,10 @@ public:
 			void drawBodyIndexFrame(){
 				cv::Mat image = cv::Mat::zeros(BodyIndexHeight, BodyIndexWidth, CV_8UC4);
 
-				//ƒr[ƒ€•ûŒü‚Ìl‚ÉF•t‚¯
+				//ãƒ“ãƒ¼ãƒ æ–¹å‘ã®äººã«è‰²ä»˜ã‘
 				for (int i = 0; i < BodyIndexWidth*BodyIndexHeight; ++i){
 					int index = i * 4;
-					//l‚ª‚¢‚ê‚Î255
+					//äººãŒã„ã‚Œã°255
 					if (bodyIndexBuffer[i] != 255){
 						if (bodyIndexBuffer[i] == audioTrackingIndex)
 						{	//speaker(black)
@@ -439,10 +439,10 @@ public:
 					}
 				}
 
-				//ƒ‰ƒWƒAƒ“‚©‚ç“x
+				//ãƒ©ã‚¸ã‚¢ãƒ³ã‹ã‚‰åº¦
 				auto angle = beamAngle * 180 / 3.1416;
 
-				//ü‚ğ‰ñ“]‚³‚¹‚é(‹t‰ñ“])
+				//ç·šã‚’å›è»¢ã•ã›ã‚‹(é€†å›è»¢)
 				auto alpha = 3.1416 / -angle;
 				int offsetX = BodyIndexWidth / 2;
 				int offsetY = BodyIndexHeight / 2;
@@ -456,12 +456,12 @@ public:
 			}
 
 
-};	//class’è‹`‚ÌÅŒã‚É";"
+};	//classå®šç¾©ã®æœ€å¾Œã«";"
 
 void main()
 {
 	try {
-		KinectApp app;	//KinectAppƒNƒ‰ƒX‚Ì•Ï”éŒ¾
+		KinectApp app;	//KinectAppã‚¯ãƒ©ã‚¹ã®å¤‰æ•°å®£è¨€
 		app.initialize();
 		app.run();
 	}
